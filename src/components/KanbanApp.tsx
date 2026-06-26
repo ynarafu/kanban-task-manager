@@ -46,6 +46,13 @@ const labelStyles: Record<CardLabel, string> = {
   Ops: "bg-[#ff7a59]/15 text-[#ff9a80] border-[#ff7a59]/40",
 };
 
+const labelText: Record<CardLabel, string> = {
+  Product: "企画",
+  Design: "デザイン",
+  Engineering: "開発",
+  Ops: "運用",
+};
+
 function toBoard(row: Record<string, string>): Board {
   return {
     id: row.id,
@@ -184,13 +191,13 @@ function AuthPanel({
         if (user?.email) {
           onSession({ id: user.id, email: user.email });
         } else {
-          setError("Confirm the email address, then sign in.");
+          setError("メールアドレスを確認してからログインしてください。");
         }
       } else {
         onSession({ id: email.toLowerCase(), email: email.toLowerCase() });
       }
     } catch (authError) {
-      setError(authError instanceof Error ? authError.message : "Authentication failed.");
+      setError(authError instanceof Error ? authError.message : "認証に失敗しました。");
     } finally {
       setBusy(false);
     }
@@ -204,16 +211,16 @@ function AuthPanel({
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#37e0bd]">
               Kanban Task Manager
             </p>
-            <h1 className="mt-3 text-3xl font-semibold text-[#f7f2e8]">Workspace sign in</h1>
+            <h1 className="mt-3 text-3xl font-semibold text-[#f7f2e8]">ワークスペースにログイン</h1>
           </div>
           <span className="rounded-md border border-[#37e0bd]/35 px-3 py-1 text-xs font-semibold text-[#69f0d6]">
-            {isSupabaseConfigured ? "Supabase" : "Demo"}
+            {isSupabaseConfigured ? "Supabase" : "デモ"}
           </span>
         </div>
 
         <form className="space-y-4" onSubmit={submit}>
           <label className="block text-sm font-medium text-[#d8d2c5]">
-            Email
+            メールアドレス
             <input
               className="focus-ring mt-2 w-full rounded-md border border-[#44463b] bg-[#11120f] px-3 py-3 text-[#f7f2e8]"
               type="email"
@@ -223,7 +230,7 @@ function AuthPanel({
             />
           </label>
           <label className="block text-sm font-medium text-[#d8d2c5]">
-            Password
+            パスワード
             <input
               className="focus-ring mt-2 w-full rounded-md border border-[#44463b] bg-[#11120f] px-3 py-3 text-[#f7f2e8]"
               type="password"
@@ -247,7 +254,7 @@ function AuthPanel({
               type="submit"
               onClick={() => setMode("signin")}
             >
-              Sign in
+              ログイン
             </button>
             <button
               className="focus-ring rounded-md border border-[#55574b] px-4 py-3 font-semibold text-[#f7f2e8]"
@@ -255,7 +262,7 @@ function AuthPanel({
               type="submit"
               onClick={() => setMode("signup")}
             >
-              Create
+              新規作成
             </button>
           </div>
         </form>
@@ -292,7 +299,7 @@ function BoardSidebar({
   return (
     <aside className="flex w-full shrink-0 flex-col gap-4 border-b border-[#35362e] bg-[#151611]/95 p-4 md:h-screen md:w-[280px] md:border-b-0 md:border-r">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#37e0bd]">Boards</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#37e0bd]">ボード</p>
         <h2 className="mt-2 text-2xl font-semibold">Kanban</h2>
       </div>
 
@@ -319,7 +326,7 @@ function BoardSidebar({
       <form className="mt-auto grid gap-2" onSubmit={submit}>
         <input
           className="focus-ring rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2 text-sm text-[#f7f2e8]"
-          placeholder="New board"
+          placeholder="新しいボード"
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
@@ -328,7 +335,7 @@ function BoardSidebar({
           type="submit"
         >
           <Plus size={16} />
-          Add board
+          ボード追加
         </button>
         {activeBoardId ? (
           <button
@@ -337,7 +344,7 @@ function BoardSidebar({
             type="button"
           >
             <Trash2 size={15} />
-            Delete board
+            ボード削除
           </button>
         ) : null}
       </form>
@@ -396,7 +403,7 @@ function ColumnTitle({
       <button
         className="focus-ring rounded-md p-1 text-[#b8b1a3] hover:text-[#ff9a80]"
         onClick={onDelete}
-        title="Delete column"
+        title="カラムを削除"
         type="button"
       >
         <Trash2 size={16} />
@@ -432,7 +439,7 @@ function SortableCard({
       <div className="mb-3 flex items-start gap-2">
         <button
           className="focus-ring mt-0.5 rounded p-1 text-[#827c70] hover:text-[#f7f2e8]"
-          title="Drag card"
+          title="カードを移動"
           type="button"
           {...attributes}
           {...listeners}
@@ -450,7 +457,7 @@ function SortableCard({
       </div>
       <div className="flex items-center justify-between gap-2">
         <span className={`rounded border px-2 py-1 text-[11px] font-semibold ${labelStyles[card.label]}`}>
-          {card.label}
+          {labelText[card.label]}
         </span>
         {card.dueDate ? (
           <span className="inline-flex items-center gap-1 text-[11px] text-[#b8b1a3]">
@@ -513,7 +520,7 @@ function ColumnLane({
           onDelete={() => onDeleteColumn(column.id)}
           onRename={(nextTitle) => onRenameColumn(column.id, nextTitle)}
         />
-        <p className="mt-1 text-xs text-[#8e887b]">{cards.length} cards</p>
+        <p className="mt-1 text-xs text-[#8e887b]">{cards.length} 件のカード</p>
       </header>
 
       <SortableContext items={cards.map((card) => card.id)} strategy={verticalListSortingStrategy}>
@@ -527,7 +534,7 @@ function ColumnLane({
       <form className="border-t border-[#35362e] p-3" onSubmit={submit}>
         <input
           className="focus-ring w-full rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2 text-sm"
-          placeholder="New card"
+          placeholder="新しいカード"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
@@ -566,7 +573,7 @@ function CardDialog({
         onSubmit={submit}
       >
         <div className="mb-4 flex items-center justify-between gap-4">
-          <h3 className="text-xl font-semibold">Card</h3>
+          <h3 className="text-xl font-semibold">カード</h3>
           <button className="focus-ring rounded-md p-1 text-[#b8b1a3]" onClick={onClose} type="button">
             <X size={20} />
           </button>
@@ -574,7 +581,7 @@ function CardDialog({
 
         <div className="grid gap-4">
           <label className="grid gap-2 text-sm font-medium text-[#d8d2c5]">
-            Title
+            タイトル
             <input
               className="focus-ring rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2"
               value={draft.title}
@@ -583,7 +590,7 @@ function CardDialog({
             />
           </label>
           <label className="grid gap-2 text-sm font-medium text-[#d8d2c5]">
-            Description
+            説明
             <textarea
               className="focus-ring min-h-[120px] rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2"
               value={draft.description}
@@ -592,7 +599,7 @@ function CardDialog({
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium text-[#d8d2c5]">
-              Due date
+              期限
               <input
                 className="focus-ring rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2"
                 type="date"
@@ -601,14 +608,16 @@ function CardDialog({
               />
             </label>
             <label className="grid gap-2 text-sm font-medium text-[#d8d2c5]">
-              Label
+              ラベル
               <select
                 className="focus-ring rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2"
                 value={draft.label}
                 onChange={(event) => setDraft({ ...draft, label: event.target.value as CardLabel })}
               >
                 {labels.map((label) => (
-                  <option key={label}>{label}</option>
+                  <option key={label} value={label}>
+                    {labelText[label]}
+                  </option>
                 ))}
               </select>
             </label>
@@ -622,10 +631,10 @@ function CardDialog({
             type="button"
           >
             <Trash2 size={16} />
-            Delete
+            削除
           </button>
           <button className="focus-ring rounded-md bg-[#37e0bd] px-4 py-2 font-semibold text-[#07100d]" type="submit">
-            Save
+            保存
           </button>
         </div>
       </form>
@@ -637,7 +646,7 @@ export function KanbanApp() {
   const [session, setSession] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  const [syncStatus, setSyncStatus] = useState("Ready");
+  const [syncStatus, setSyncStatus] = useState("待機中");
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const { data: localData, setData: setLocalData } = useLocalWorkspace(session);
@@ -711,7 +720,7 @@ export function KanbanApp() {
     if (!supabase) {
       return;
     }
-    setSyncStatus("Loading");
+    setSyncStatus("読み込み中");
     const [boardsResult, columnsResult, cardsResult] = await Promise.all([
       supabase.from("boards").select("id,name,created_at").eq("user_id", userId).order("created_at"),
       supabase.from("lists").select("id,board_id,title,position").order("position"),
@@ -719,7 +728,7 @@ export function KanbanApp() {
     ]);
 
     if (boardsResult.error || columnsResult.error || cardsResult.error) {
-      setSyncStatus("Sync error");
+      setSyncStatus("同期エラー");
       return;
     }
 
@@ -735,7 +744,7 @@ export function KanbanApp() {
     }
 
     setSupabaseData(nextData);
-    setSyncStatus("Synced");
+    setSyncStatus("同期済み");
   }
 
   async function createRemoteStarterWorkspace(userId: string) {
@@ -794,7 +803,7 @@ export function KanbanApp() {
     const boardId = createId("board");
     const columnIds = [createId("list"), createId("list"), createId("list")];
     const board: Board = { id: boardId, name, createdAt: nowIso() };
-    const columns: Column[] = ["To do", "Doing", "Done"].map((title, position) => ({
+    const columns: Column[] = ["未着手", "進行中", "完了"].map((title, position) => ({
       id: columnIds[position],
       boardId,
       title,
@@ -809,7 +818,7 @@ export function KanbanApp() {
     });
 
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("boards").insert({ id: board.id, user_id: session.id, name, created_at: board.createdAt });
       await supabase.from("lists").insert(
         columns.map((column) => ({
@@ -819,7 +828,7 @@ export function KanbanApp() {
           position: column.position,
         })),
       );
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -834,9 +843,9 @@ export function KanbanApp() {
     });
 
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("boards").delete().eq("id", boardId);
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -854,14 +863,14 @@ export function KanbanApp() {
     updateWorkspace({ ...data, columns: [...data.columns, column] });
 
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("lists").insert({
         id: column.id,
         board_id: column.boardId,
         title,
         position,
       });
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -871,9 +880,9 @@ export function KanbanApp() {
       columns: data.columns.map((column) => (column.id === columnId ? { ...column, title } : column)),
     });
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("lists").update({ title }).eq("id", columnId);
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -884,9 +893,9 @@ export function KanbanApp() {
       cards: data.cards.filter((card) => card.columnId !== columnId),
     });
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("lists").delete().eq("id", columnId);
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -904,7 +913,7 @@ export function KanbanApp() {
     updateWorkspace({ ...data, cards: [...data.cards, card] });
 
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("cards").insert({
         id: card.id,
         list_id: card.columnId,
@@ -914,7 +923,7 @@ export function KanbanApp() {
         label: card.label,
         position,
       });
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -926,7 +935,7 @@ export function KanbanApp() {
     setEditingCard(null);
 
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase
         .from("cards")
         .update({
@@ -936,7 +945,7 @@ export function KanbanApp() {
           label: card.label,
         })
         .eq("id", card.id);
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -945,9 +954,9 @@ export function KanbanApp() {
     setEditingCard(null);
 
     if (supabase) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await supabase.from("cards").delete().eq("id", cardId);
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
@@ -969,7 +978,7 @@ export function KanbanApp() {
 
     const client = supabase;
     if (client) {
-      setSyncStatus("Saving");
+      setSyncStatus("保存中");
       await Promise.all(
         nextCards.map((card) =>
           client
@@ -978,12 +987,12 @@ export function KanbanApp() {
             .eq("id", card.id),
         ),
       );
-      setSyncStatus("Synced");
+      setSyncStatus("同期済み");
     }
   }
 
   if (loading) {
-    return <main className="grid min-h-screen place-items-center text-[#b8b1a3]">Loading</main>;
+    return <main className="grid min-h-screen place-items-center text-[#b8b1a3]">読み込み中</main>;
   }
 
   if (!session) {
@@ -1004,10 +1013,10 @@ export function KanbanApp() {
         <header className="flex flex-col gap-4 border-b border-[#35362e] bg-[#11120f]/88 px-4 py-4 backdrop-blur md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#b8b1a3]">
-              {isSupabaseConfigured ? "Supabase workspace" : "Demo workspace"} · {syncStatus}
+              {isSupabaseConfigured ? "Supabase ワークスペース" : "デモワークスペース"} · {syncStatus}
             </p>
             <h1 className="mt-1 truncate text-2xl font-semibold md:text-3xl">
-              {activeBoard?.name ?? "No board selected"}
+              {activeBoard?.name ?? "ボードが選択されていません"}
             </h1>
           </div>
 
@@ -1016,7 +1025,7 @@ export function KanbanApp() {
               <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8e887b]" size={16} />
               <input
                 className="focus-ring w-full rounded-md border border-[#44463b] bg-[#1a1b17] py-2 pl-9 pr-3 text-sm"
-                placeholder="Search cards"
+                placeholder="カードを検索"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
               />
@@ -1027,7 +1036,7 @@ export function KanbanApp() {
               type="button"
             >
               <LogOut size={16} />
-              Sign out
+              ログアウト
             </button>
           </div>
         </header>
@@ -1096,7 +1105,7 @@ function AddColumn({ onCreate }: { onCreate: (title: string) => void }) {
     >
       <input
         className="focus-ring rounded-md border border-[#44463b] bg-[#11120f] px-3 py-2 text-sm"
-        placeholder="New column"
+        placeholder="新しいカラム"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
       />
@@ -1105,7 +1114,7 @@ function AddColumn({ onCreate }: { onCreate: (title: string) => void }) {
         type="submit"
       >
         <Plus size={16} />
-        Add column
+        カラム追加
       </button>
     </form>
   );

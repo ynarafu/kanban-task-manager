@@ -23,23 +23,23 @@ export function createStarterWorkspace(): WorkspaceData {
   const boards: Board[] = [
     {
       id: boardId,
-      name: "Launch board",
+      name: "リリース準備ボード",
       createdAt: nowIso(),
     },
   ];
 
   const columns: Column[] = [
-    { id: todoId, boardId, title: "To do", position: 0 },
-    { id: doingId, boardId, title: "Doing", position: 1 },
-    { id: doneId, boardId, title: "Done", position: 2 },
+    { id: todoId, boardId, title: "未着手", position: 0 },
+    { id: doingId, boardId, title: "進行中", position: 1 },
+    { id: doneId, boardId, title: "完了", position: 2 },
   ];
 
   const cards: Card[] = [
     {
       id: createId("card"),
       columnId: todoId,
-      title: "Scope onboarding flow",
-      description: "Define the sign-in states, empty states, and first board defaults.",
+      title: "オンボーディング導線を整理",
+      description: "ログイン状態、空状態、初期ボードの表示内容を決める。",
       dueDate: "2026-07-03",
       label: "Product",
       position: 0,
@@ -47,8 +47,8 @@ export function createStarterWorkspace(): WorkspaceData {
     {
       id: createId("card"),
       columnId: todoId,
-      title: "Write RLS policies",
-      description: "Restrict boards, lists, and cards to rows owned through the current user.",
+      title: "RLS ポリシーを作成",
+      description: "ボード、リスト、カードをログインユーザーの所有データだけに制限する。",
       dueDate: "2026-07-05",
       label: "Engineering",
       position: 1,
@@ -56,8 +56,8 @@ export function createStarterWorkspace(): WorkspaceData {
     {
       id: createId("card"),
       columnId: doingId,
-      title: "Polish drag states",
-      description: "Make card movement feel immediate while positions save in the background.",
+      title: "ドラッグ中の表示を調整",
+      description: "カード移動を即時反映し、裏側で並び順を保存する。",
       dueDate: "2026-07-01",
       label: "Design",
       position: 0,
@@ -65,8 +65,8 @@ export function createStarterWorkspace(): WorkspaceData {
     {
       id: createId("card"),
       columnId: doneId,
-      title: "Create seed board",
-      description: "Ship a useful default board for new accounts.",
+      title: "初期ボードを用意",
+      description: "新規ユーザーがすぐ試せるデフォルトボードを作成する。",
       dueDate: "2026-06-28",
       label: "Ops",
       position: 0,

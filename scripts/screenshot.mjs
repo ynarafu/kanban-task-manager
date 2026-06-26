@@ -6,9 +6,9 @@ const page = await browser.newPage({
   deviceScaleFactor: 1,
 });
 
-await page.goto("http://127.0.0.1:3003", { waitUntil: "domcontentloaded" });
-await page.getByRole("button", { name: "Sign in" }).click();
-await page.getByRole("heading", { name: "Launch board" }).waitFor();
+await page.goto("http://127.0.0.1:3005", { waitUntil: "domcontentloaded" });
+await page.getByRole("button", { name: "ログイン" }).click();
+await page.getByRole("heading", { name: "リリース準備ボード" }).waitFor();
 await page.screenshot({
   path: "D:/Users/narafu/dev/portfolio/public/projects/kanban.png",
   fullPage: false,
