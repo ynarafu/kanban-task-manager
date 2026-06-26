@@ -2,7 +2,7 @@
 node_modules
 out
 dist
-.openai/artifacts
+.openai
 .env*
 !.env.example
 *.tsbuildinfo
