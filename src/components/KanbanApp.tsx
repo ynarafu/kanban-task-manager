@@ -144,8 +144,15 @@ function useLocalWorkspace(user: UserSession | null) {
       return;
     }
 
+    let nextData = createStarterWorkspace();
     const saved = localStorage.getItem(localKey(user));
-    const nextData = saved ? (JSON.parse(saved) as WorkspaceData) : createStarterWorkspace();
+    if (saved) {
+      try {
+        nextData = JSON.parse(saved) as WorkspaceData;
+      } catch {
+        // 壊れた保存データは破棄し、スターターで復旧する
+      }
+    }
     setData(nextData);
     localStorage.setItem(localKey(user), JSON.stringify(nextData));
   }, [user]);
@@ -670,7 +677,11 @@ export function KanbanApp() {
       } else {
         const saved = localStorage.getItem("kanban-task-manager:session");
         if (saved) {
-          setSession(JSON.parse(saved) as UserSession);
+          try {
+            setSession(JSON.parse(saved) as UserSession);
+          } catch {
+            localStorage.removeItem("kanban-task-manager:session");
+          }
         }
       }
       setLoading(false);
@@ -974,13 +985,21 @@ export function KanbanApp() {
     const activeId = String(event.active.id);
     const overId = String(event.over.id);
     const nextCards = reorderCards(data.cards, activeId, overId, data.columns);
+
+    // 並び替えで実際に変わったカードだけを抽出（全カード更新を避ける）
+    const prev = new Map(data.cards.map((card) => [card.id, card]));
+    const changed = nextCards.filter((card) => {
+      const before = prev.get(card.id);
+      return !before || before.columnId !== card.columnId || before.position !== card.position;
+    });
+
     updateWorkspace({ ...data, cards: nextCards });
 
     const client = supabase;
-    if (client) {
+    if (client && changed.length > 0) {
       setSyncStatus("保存中");
       await Promise.all(
-        nextCards.map((card) =>
+        changed.map((card) =>
           client
             .from("cards")
             .update({ list_id: card.columnId, position: card.position })
